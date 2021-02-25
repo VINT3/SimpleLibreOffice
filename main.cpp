@@ -45,7 +45,6 @@ int main(int argc, char *argv[])
 
     uno.breakPage();
 
-
     uno.createDocTable(4,4);
     uno.setTableData("A1", "Title1");
     uno.setTableData("A2", 52);
