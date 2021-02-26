@@ -61,13 +61,16 @@ void UNOWriter::openExisCompLO(std::string pathToFile)
 
 }
 
-void UNOWriter::writeTextDocument(std::string text, int pos)
+void UNOWriter::writeTextDoc(std::string text, int pos)
 {
-    if (pos>=0)
+    xText = xDocument->getText();
+    xCursor = xText->createTextCursor();
+    if(pos >= 0)
         xCursor->goRight(pos,0);
+    xCursor->gotoEnd(0);
     xText->insertString(xCursor,OUString(text.c_str(),
                                          (sal_Int32)strlen(text.c_str()),
-                                         RTL_TEXTENCODING_ISO_8859_1 ),false);
+                                         RTL_TEXTENCODING_UTF8 ),false);
 }
 
 void UNOWriter::createDocTable(int row, int count)
@@ -96,48 +99,49 @@ void UNOWriter::setTableData(std::string position, std::string data)
     xCursor = xText->createTextCursor();
     xCursor->setString(OUString::createFromAscii(data.c_str()));
 }
-
-void UNOWriter::chooseStyle(std::string styleName, Align align)
+//style page
+void UNOWriter::chooseStyle(std::string styleName)
 {
-    int temp;
-    if(align == Align::ALIGN_LEFT){
-        temp = com::sun::star::style::ParagraphAdjust::ParagraphAdjust_LEFT;
-    }
-    else if(align == Align::ALIGN_RIGHT){
-        temp = com::sun::star::style::ParagraphAdjust::ParagraphAdjust_RIGHT;
-    }
-    else if(align == Align::ALIGN_CENTER){
-        temp = com::sun::star::style::ParagraphAdjust::ParagraphAdjust_CENTER;
-    }
-
     xText = xDocument->getText();
     xCursor = xText->createTextCursor();
     xCursor->gotoEnd(0);
     Reference< XPropertySet> xCProps( xCursor,UNO_QUERY);
     xCProps->setPropertyValue("ParaStyleName", ::Any(OUString::createFromAscii( styleName.c_str())));
-    xCProps->setPropertyValue("ParaAdjust",::Any(temp));
 
 }
 
-void UNOWriter::chooseStyle(std::string position, std::string styleName, Align align)
+void UNOWriter::chooseAlign(int align)
 {
-    int temp;
-    if(align == Align::ALIGN_LEFT){
-        temp = com::sun::star::style::ParagraphAdjust::ParagraphAdjust_LEFT;
-    }
-    else if(align == Align::ALIGN_RIGHT){
-        temp = com::sun::star::style::ParagraphAdjust::ParagraphAdjust_RIGHT;
-    }
-    else if(align == Align::ALIGN_CENTER){
-        temp = com::sun::star::style::ParagraphAdjust::ParagraphAdjust_CENTER;
-    }
-
+    Reference< XPropertySet> xCProps( xCursor,UNO_QUERY);
+    xCProps->setPropertyValue("ParaAdjust",::Any(align));
+}
+//style sheet
+void UNOWriter::chooseStyle(std::string position, std::string styleName)
+{    
     Reference< XCell > xCell = xDocTable->getCellByName(OUString::createFromAscii(position.c_str()));
     xText = Reference< XText >(xCell,UNO_QUERY);
     xCursor = xText->createTextCursor();
     Reference< XPropertySet> xCProps( xCursor,UNO_QUERY);
-    xCProps->setPropertyValue("ParaStyleName", ::Any(OUString::createFromAscii( styleName.c_str())));
-    xCProps->setPropertyValue("ParaAdjust",::Any(temp));
+    xCProps->setPropertyValue("ParaStyleName", ::Any(OUString::createFromAscii( styleName.c_str())));    
+}
+
+void UNOWriter::chooseFontName(std::string fontName)
+{
+    Reference< XPropertySet > xCProps(xCursor,UNO_QUERY);
+    xCProps->setPropertyValue("CharFontName",::Any(OUString::createFromAscii(fontName.c_str())));
+}
+
+void UNOWriter::chooseFontSize(float fontSize)
+{
+    Reference< XPropertySet > xCProps(xCursor,UNO_QUERY);
+    xCProps->setPropertyValue("CharHeight",::Any(fontSize));
+
+}
+
+void UNOWriter::chooseFontWeight(float fontWeight)
+{
+    Reference< XPropertySet > xCProps(xCursor,UNO_QUERY);
+    xCProps->setPropertyValue("CharWeight",::Any(fontWeight));
 }
 
 void UNOWriter::breakPage()
