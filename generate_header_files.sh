@@ -1,6 +1,6 @@
 echo "Start Script"
 
-#sudo apt install libreoffice libreoffice-dev* -y
+sudo apt install libreoffice libreoffice-dev* -y
 
 export LIBRE=/usr/lib/libreoffice
 export LIBREPROGRAM=${LIBRE}/program
@@ -17,4 +17,7 @@ export OOVBAAPI=${LIBREPROGRAM}/types/oovbaapi.rdb
 export OFFAPI=${LIBREPROGRAM}/types/offapi.rdb
  
 cppumaker -Gc -O ${STAGE} ${TYPES} ${OOVBAAPI} ${OFFAPI}
+
+echo "/usr/lib/libreoffice/program" >> /etc/ld.so.conf
+
 echo "done"
