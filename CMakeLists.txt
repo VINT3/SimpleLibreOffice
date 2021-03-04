@@ -25,6 +25,8 @@ add_executable(WriterLO
     main.cpp
     unowriter.cpp
     unowriter.h
+    libreoffice.hxx
+
 )
 
 target_include_directories(WriterLO PUBLIC /usr/lib/libreoffice/sdk/include) #Path to LO
